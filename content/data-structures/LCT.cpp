@@ -2,6 +2,9 @@
  * Author: Hanfei Chen
  * Description: Vertex set and path composite
  */
+
+#pragma once
+
 struct F {
 	num a, b;
 	friend F compose(const F& a, const F& b) {
