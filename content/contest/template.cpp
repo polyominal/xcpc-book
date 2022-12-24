@@ -6,8 +6,11 @@ using namespace std;
 #define all(x) x.begin(), x.end()
 #define sz(x) (int)((x).size())
 
+template <class T> using V = vector<T>;
+template <class T> using VV = V<V<T>>;
+
 using ll = int64_t;
-using vi = vector<int>;
+using vi = V<int>;
 using pii = pair<int, int>;
 
 int main() {
