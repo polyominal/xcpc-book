@@ -7,19 +7,16 @@
 
 /// start-hash
 template <class N> struct segbeats {
-	vector<N> seg;
+	V<N> seg;
 	int s;
 	segbeats() {}
-	template <class T> segbeats(const vector<T>& a) {
+	template <class T> segbeats(const V<T>& a) {
 		int n = int(a.size());
 		s = 1 << (n <= 1 ? 0 : 32 - __builtin_clz(n-1));
+		// be sure to define 0 properly
 		seg.resize(2*s);
-		for (int i = 0; i < n; i++) {
-			seg[s+i] = a[i];
-		}
-		for (int i = s-1; i >= 1; i--) {
-			upd_node(i);
-		}
+		rep(i,0,n) seg[s+i] = a[i];
+		per(i,1,s) upd_node(i);
 	}
 	void propagate(int i) {
 		seg[i].propagate(seg[2*i], seg[2*i+1]);
@@ -27,31 +24,31 @@ template <class N> struct segbeats {
 	void upd_node(int i) {
 		seg[i] = N::merge(seg[2*i], seg[2*i+1]);
 	}
-	template <class F, class... Args> void upd(int i, int l, int r, int ql, int qr, F f, Args&&... args) {
-		if (r <= ql || qr <= l) return;
-		if (ql <= l && r <= qr && (seg[i].*f)(forward<Args>(args)...)) return;
+	template <class F, class... Args> void upd(int i, int l, int r, int b, int e, F f, Args&&... args) {
+		if (r <= b || e <= l) return;
+		if (b <= l && r <= e && (seg[i].*f)(forward<Args>(args)...)) return;
 		propagate(i);
 		int m = (l+r)/2;
-		upd(2*i, l, m, ql, qr, f, forward<Args>(args)...);
-		upd(2*i+1, m, r, ql, qr, f, forward<Args>(args)...);
+		upd(2*i, l, m, b, e, f, forward<Args>(args)...);
+		upd(2*i+1, m, r, b, e, f, forward<Args>(args)...);
 		upd_node(i);
 	}
-	template <class F, class G, class H> auto query(int i, int l, int r, int ql, int qr, F f, G g, H h) {
-		if (r <= ql || qr <= l) return h;
-		if (ql <= l && r <= qr) {
-			return (seg[i].*f)();
-		}
+	template <class F, class G, class H> auto query(int i, int l, int r, int b, int e, F f, G g, H h) {
+		if (r <= b || e <= l) return h;
+		if (b <= l && r <= e) return (seg[i].*f)();
 		propagate(i);
 		int m = (l+r)/2;
-		return g(query(2*i, l, m, ql, qr, f, g, h), query(2*i+1, m, r, ql, qr, f, g, h));
+		return g(query(2*i, l, m, b, e, f, g, h), query(2*i+1, m, r, b, e, f, g, h));
 	}
-	template <class F, class... Args> void upd(int l, int r, F f, Args&&... args) {
-		assert(l <= r);
-		upd(1, 0, s, l, r, f, forward<Args>(args)...);
+	template <class F, class... Args> void upd(int b, int e, F f, Args&&... args) {
+		//if (b >= e) return;
+		assert(b <= e);
+		upd(1, 0, s, b, e, f, forward<Args>(args)...);
 	}
-	template <class F, class G, class H> auto query(int l, int r, F f, G g, H h) {
-		assert(l <= r);
-		return query(1, 0, s, l, r, f, g, h);
+	template <class F, class G, class H> auto query(int b, int e, F f, G g, H h) {
+		//if (b >= e) return h;
+		assert(b <= e);
+		return query(1, 0, s, b, e, f, g, h);
 	}
 };
 /// end-hash
@@ -78,9 +75,7 @@ struct D {
 	static D merge(const D& x, const D& y) {
 		return D(x.c + y.c, x.s + y.s);
 	}
-	num getsum() {
-		return c;
-	}
+	num getsum() { return c; }
 };
 /// end-hash
 
