@@ -30,15 +30,15 @@ struct num { /// start-hash
 	num(ll v_ = 0) : v(int(v_ % mod)) { if (v<0) v+=mod; }
 	explicit operator int() const { return v; }
 };
-inline num operator+(num a,num b){return num(a.v+b.v);}
-inline num operator-(num a,num b){return num(a.v+mod-b.v);}
-inline num operator*(num a,num b){return num(1ll*a.v*b.v);}
-inline num pow(num a, int b) {
+num operator+(num a,num b){return num(a.v+b.v);}
+num operator-(num a,num b){return num(a.v+mod-b.v);}
+num operator*(num a,num b){return num(1ll*a.v*b.v);}
+num pow(num a, int b) {
 	num r = 1;
 	do{if(b&1)r=r*a;a=a*a;}while(b>>=1);
 	return r;
 }
-inline num inv(num a) { return pow(a, mod-2); }
+num inv(num a) { return pow(a, mod-2); }
 /// end-hash
 #endif
 
@@ -46,7 +46,7 @@ using vn = vector<num>;
 vi rev({0, 1});
 vn rt(2, num(1)), fa, fb;
 
-inline void init(int n) { /// start-hash
+void init(int n) { /// start-hash
 	if (n <= sz(rt)) return;
 	rev.resize(n);
 	rep(i,0,n) rev[i] = (rev[i>>1] | ((i&1)*n)) >> 1;
@@ -58,27 +58,33 @@ inline void init(int n) { /// start-hash
 #else
 		num z = pow(num(g), (mod-1)/(2*k)); // NTT
 #endif
-		rep(i,k/2,k) rt[2*i] = rt[i], rt[2*i+1] = rt[i]*z;
+		rep(i,k/2,k) {
+			rt[2*i] = rt[i];
+			rt[2*i+1] = rt[i] * z;
+		}
 	}
 } /// end-hash
 
-inline void fft(vector<num> &a, int n) { /// start-hash
+void fft(vector<num> &a, int n) { /// start-hash
 	init(n);
-	int s = __builtin_ctz(sz(rev)/n);
-	rep(i,0,n) if (i < rev[i]>>s) swap(a[i], a[rev[i]>>s]);
-	for (int k = 1; k < n; k *= 2)
-		for (int i = 0; i < n; i += 2 * k) rep(j,0,k) {
-			num t = rt[j+k] * a[i+j+k];
-			a[i+j+k] = a[i+j] - t;
-			a[i+j] = a[i+j] + t;
+	int s = __builtin_ctz(sz(rev) / n);
+	rep(i,0,n) if (i < (rev[i]>>s)) swap(a[i], a[rev[i]>>s]);
+	for (int k = 1; k < n; k *= 2) {
+		for (int i = 0; i < n; i += 2 * k) {
+			for (int j = 0; j < k; j++) {
+				num t = rt[j+k] * a[i+j+k];
+				a[i+j+k] = a[i+j] - t;
+				a[i+j] = a[i+j] + t;
+			}
 		}
+	}
 } /// end-hash
 
 // Complex/NTT
 vn multiply(vn a, vn b) { /// start-hash
 	int s = sz(a) + sz(b) - 1;
 	if (s <= 0) return {};
-	int L = s > 1 ? 32 - __builtin_clz(s-1) : 0, n = 1 << L;
+	int n = 1 << (s <= 1 ? 0 : 32 - __builtin_clz(s-1));
 	a.resize(n), b.resize(n);
 	fft(a, n);
 	fft(b, n);

@@ -7,11 +7,11 @@ using namespace std;
 #define all(x) x.begin(), x.end()
 #define sz(x) int(x.size())
 
-template <class T> using V = vector<T>;
-template <class T> using VV = V<V<T>>;
+template <class T> using vc = vector<T>;
+template <class T> using vvc = vc<vc<T>>;
 
 using ll = int64_t;
-using vi = V<int>;
+using vi = vector<int>;
 using pii = pair<int, int>;
 
 int main() {

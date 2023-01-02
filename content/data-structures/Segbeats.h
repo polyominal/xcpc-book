@@ -7,10 +7,10 @@
 
 /// start-hash
 template <class N> struct segbeats {
-	V<N> seg;
+	vector<N> seg;
 	int s;
 	segbeats() {}
-	template <class T> segbeats(const V<T>& a) {
+	template <class T> segbeats(const vector<T>& a) {
 		int n = int(a.size());
 		s = 1 << (n <= 1 ? 0 : 32 - __builtin_clz(n-1));
 		// be sure to define 0 properly

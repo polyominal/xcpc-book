@@ -8,14 +8,25 @@
  */
 #pragma once
 
-void manacher(const string& s) {
+template <class S> array<vi, 2> manacher(const S& s) {
 	int n = sz(s);
-	vi p[2] = {vi(n+1), vi(n)};
-	rep(z,0,2) for (int i=0,l=0,r=0; i < n; i++) {
-		int t = r-i+!z;
-		if (i<r) p[z][i] = min(t, p[z][l+t]);
-		int L = i-p[z][i], R = i+p[z][i]-!z;
-		while (L>=1 && R+1<n && s[L-1] == s[R+1])
-			p[z][i]++, L--, R++;
-		if (R>r) l=L, r=R;
-}}
+	array<vi, 2> p = {vi(n+1), vi(n)};
+	rep(z,0,2) {
+		int l = 0, r = 0;
+		rep(i,0,n) {
+			int t = r-i + !z;
+			int& k = p[z][i];
+			if (i < r) k = min(t, p[z][l+t]);
+			int nl = i-k;
+			int nr = i+k - !z;
+			while (nl-1 >= 0 && nr+1 < n && s[nl-1] == s[nr+1]) {
+				k++;
+				nl--, nr++;
+			}
+			if (nr > r) {
+				l = nl, r = nr;
+			}
+		}
+	}
+	return p;
+}

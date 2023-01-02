@@ -8,13 +8,13 @@
 /// start-hash
 template <class T> struct cartesian {
 	int n, rt;
-	vector<int> par, lch, rch;
-	cartesian(const vector<T>& a) : n(int(a.size())), rt(0), 
+	vi par, lch, rch;
+	cartesian(const V<T>& a) : n(sz(a)), rt(0), 
 	par(n, -1), lch(n, -1), rch(n, -1) {
-		vector<int> stk;
+		assert(n >= 1);
+		vi stk = {0};
 		stk.reserve(n);
-		stk.push_back(0);
-		for (int i = 1; i < n; i++) {
+		rep(i,1,n) {
 			if (a[stk.back()] > a[i]) {
 				while (stk.size() >= 2 && a[stk.end()[-2]] > a[i]) {
 					stk.pop_back();

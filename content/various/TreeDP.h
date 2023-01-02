@@ -10,12 +10,12 @@
 template <class D, class E>
 struct treedp {
 	// modify as needed
-	const VV<E>& adj;
+	const vector<vector<E>>& adj;
 	int n;
-	V<D> up, pref, dp, dp2, res;
-	V<E> par;
+	vector<D> up, pref, dp, dp2, res;
+	vector<E> par;
 	void dfs(int v, int p) {
-		up[v] = D();
+		up[v] = D(v);
 		for (auto e : adj[v]) {
 			int w = e;
 			if (w != p) {
@@ -42,10 +42,10 @@ struct treedp {
 		}
 		res[v] = f;
 	}
-	treedp(const VV<E>& adj_) : adj(adj_), n(int(adj.size())), 
+	treedp(const vector<vector<E>>& adj_) : adj(adj_), n(int(adj.size())), 
 	up(n), pref(n), dp(n), dp2(n), res(n), par(n) {
 		assert(n >= 1);
 		dfs(0, -1);
-		dfs2(0, -1, D());
+		dfs2(0, -1, D(0));
 	}
 };
