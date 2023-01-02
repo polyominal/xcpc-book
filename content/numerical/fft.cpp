@@ -10,22 +10,24 @@ namespace fft {
 #if FFT
 // FFT
 using dbl = double;
-struct num { /// start-hash
+/// start-hash
+struct num {
 	dbl x, y;
 	num(dbl x_ = 0, dbl y_ = 0) : x(x_), y(y_) { }
 };
-inline num operator+(num a, num b) { return num(a.x + b.x, a.y + b.y); }
-inline num operator-(num a, num b) { return num(a.x - b.x, a.y - b.y); }
-inline num operator*(num a, num b) { return num(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x); }
-inline num conj(num a) { return num(a.x, -a.y); }
-inline num inv(num a) { dbl n = (a.x*a.x+a.y*a.y); return num(a.x/n,-a.y/n); }
+num operator+(num a, num b) { return num(a.x + b.x, a.y + b.y); }
+num operator-(num a, num b) { return num(a.x - b.x, a.y - b.y); }
+num operator*(num a, num b) { return num(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x); }
+num conj(num a) { return num(a.x, -a.y); }
+num inv(num a) { dbl n = (a.x*a.x+a.y*a.y); return num(a.x/n,-a.y/n); }
 /// end-hash
 #else
 // NTT
 const int mod = 998244353, g = 3;
 // For p < 2^30 there is also (5 << 25, 3), (7 << 26, 3),
 // (479 << 21, 3) and (483 << 21, 5). Last two are > 10^9.
-struct num { /// start-hash
+/// start-hash
+struct num {
 	int v;
 	num(ll v_ = 0) : v(int(v_ % mod)) { if (v<0) v+=mod; }
 	explicit operator int() const { return v; }
@@ -46,7 +48,8 @@ using vn = vector<num>;
 vi rev({0, 1});
 vn rt(2, num(1)), fa, fb;
 
-void init(int n) { /// start-hash
+/// start-hash
+void init(int n) {
 	if (n <= sz(rt)) return;
 	rev.resize(n);
 	rep(i,0,n) rev[i] = (rev[i>>1] | ((i&1)*n)) >> 1;
@@ -65,7 +68,8 @@ void init(int n) { /// start-hash
 	}
 } /// end-hash
 
-void fft(vector<num> &a, int n) { /// start-hash
+/// start-hash
+void fft(vector<num> &a, int n) {
 	init(n);
 	int s = __builtin_ctz(sz(rev) / n);
 	rep(i,0,n) if (i < (rev[i]>>s)) swap(a[i], a[rev[i]>>s]);
@@ -81,7 +85,8 @@ void fft(vector<num> &a, int n) { /// start-hash
 } /// end-hash
 
 // Complex/NTT
-vn multiply(vn a, vn b) { /// start-hash
+/// start-hash
+vn multiply(vn a, vn b) {
 	int s = sz(a) + sz(b) - 1;
 	if (s <= 0) return {};
 	int n = 1 << (s <= 1 ? 0 : 32 - __builtin_clz(s-1));
@@ -98,7 +103,8 @@ vn multiply(vn a, vn b) { /// start-hash
 
 // Complex/NTT power-series inverse
 // Doubles b as b[:n] = (2 - a[:n] * b[:n/2]) * b[:n/2]
-vn inverse(const vn& a) { /// start-hash
+/// start-hash
+vn inverse(const vn& a) {
 	if (a.empty()) return {};
 	vn b({inv(a[0])});
 	b.reserve(2*a.size());
@@ -123,7 +129,8 @@ vn inverse(const vn& a) { /// start-hash
 #if FFT
 // Double multiply (num = complex)
 using vd = vector<double>;
-vd multiply(const vd& a, const vd& b) { /// start-hash
+/// start-hash
+vd multiply(const vd& a, const vd& b) {
 	int s = sz(a) + sz(b) - 1;
 	if (s <= 0) return {};
 	int L = s > 1 ? 32 - __builtin_clz(s-1) : 0, n = 1 << L;
@@ -142,7 +149,8 @@ vd multiply(const vd& a, const vd& b) { /// start-hash
 	return r;
 } /// end-hash
 
-// Integer multiply mod m (num = complex) /// start-hash
+// Integer multiply mod m (num = complex)
+/// start-hash
 vi multiply_mod(const vi& a, const vi& b, int m) {
 	int s = sz(a) + sz(b) - 1;
 	if (s <= 0) return {};
