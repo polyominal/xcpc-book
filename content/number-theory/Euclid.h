@@ -1,6 +1,7 @@
 /**
  * Author: Hanfei Chen
- * Date: 2022-12-19
+ * Date: 2023-01-03
+ * Source: https://cp-algorithms.com/algebra/linear-diophantine-equation.html
  * Description: $ax + by = c$ stuff.
  */
 #pragma once
@@ -12,6 +13,33 @@ tuple<ll, ll, ll> euclid(ll a, ll b) {
 	}
 	auto [x, y, g] = euclid(b, a % b);
 	return {y, x - a / b * y, g};
+}
+/// end-hash
+
+template <class T, class U> U fix(T a, U m) {
+	a %= m;
+	if (a < 0) a += m;
+	return U(a);
+}
+
+/// start-hash
+ll minv(ll a, ll m) {
+	a %= m;
+	auto [x, y, g] = euclid(a, m);
+	if (g != 1) return -1;
+	return fix(x, m);
+}
+/// end-hash
+
+/// start-hash
+// NOT tested, but anyway
+pair<ll, ll> crt(ll a1, ll m1, ll a2, ll m2) {
+	auto [x, y, g] = euclid(m1, m2);
+	if (a1 % g != a2 % g) return {0, -1};
+	x = fix(__int128_t(x) * a2, m2);
+	y = fix(__int128_t(y) * a1, m1);
+	ll lcm = m1 * (m2 / g);
+	return {fix(__int128_t(x) * (m1/g) + __int128_t(y) * (m2/g), lcm), lcm};
 }
 /// end-hash
 

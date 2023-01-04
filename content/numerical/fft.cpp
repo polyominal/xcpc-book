@@ -141,7 +141,7 @@ vd multiply(const vd& a, const vd& b) {
 	rep(i,0,sz(a)) fa[i].x = a[i];
 	rep(i,0,sz(b)) fa[i].y = b[i];
 	fft(fa, n);
-	trav(x, fa) x = x * x;
+	rep(i,0,n) fa[i] = fa[i] * fa[i];
 	rep(i,0,n) fb[i] = fa[(n-i)&(n-1)] - conj(fa[i]);
 	fft(fb, n);
 	vd r(s);
@@ -223,7 +223,8 @@ poly& operator*=(poly& a, const num& b) { // Optional
 poly operator*(const poly& a, const num& b) { poly r=a; r*=b; return r; }
 
 // Polynomial floor division; no leading 0's plz
-poly operator/(poly a, poly b) { /// start-hash
+/// start-hash
+poly operator/(poly a, poly b) {
 	if (sz(a) < sz(b)) return {};
 	int s = sz(a)-sz(b)+1;
 	reverse(a.begin(), a.end());
@@ -236,7 +237,8 @@ poly operator/(poly a, poly b) { /// start-hash
 	return a;
 } /// end-hash
 poly& operator/=(poly& a, const poly& b) {return a = a/b;}
-poly& operator%=(poly& a, const poly& b) { /// start-hash
+/// start-hash
+poly& operator%=(poly& a, const poly& b) {
 	if (sz(a) >= sz(b)) {
 		poly c = (a / b) * b;
 		a.resize(sz(b)-1);
@@ -247,13 +249,15 @@ poly& operator%=(poly& a, const poly& b) { /// start-hash
 poly operator%(const poly& a, const poly& b) { poly r=a; r%=b; return r; }
 
 // Log/exp/pow
-poly deriv(const poly& a) { /// start-hash
+/// start-hash
+poly deriv(const poly& a) {
 	if (a.empty()) return {};
 	poly b(sz(a)-1);
 	rep(i,1,sz(a)) b[i-1]=a[i]*i;
 	return b;
 } /// end-hash
-poly integ(const poly& a) { /// start-hash
+/// start-hash
+poly integ(const poly& a) {
 	poly b(sz(a)+1);
 	b[1]=1; // mod p
 	rep(i,2,sz(b)) b[i]=b[fft::mod%i]*(-fft::mod/i); // mod p
@@ -261,12 +265,14 @@ poly integ(const poly& a) { /// start-hash
 	//rep(i,1,sz(b)) b[i]=a[i-1]*inv(num(i)); // else
 	return b;
 } /// end-hash
-poly log(const poly& a) { // a[0] == 1 /// start-hash
+/// start-hash
+poly log(const poly& a) { // a[0] == 1
 	poly b = integ(deriv(a)*inverse(a));
 	b.resize(a.size());
 	return b;
 } /// end-hash
-poly exp(const poly& a) { // a[0] == 0 /// start-hash
+/// start-hash
+poly exp(const poly& a) { // a[0] == 0
 	poly b(1,num(1));
 	if (a.empty()) return b;
 	while (sz(b) < sz(a)) {
@@ -279,7 +285,8 @@ poly exp(const poly& a) { // a[0] == 0 /// start-hash
 	}
 	return b;
 } /// end-hash
-poly pow(const poly& a, int m) { // m >= 0 /// start-hash
+/// start-hash
+poly pow(const poly& a, int m) { // m >= 0
 	poly b(a.size());
 	if (!m) { b[0] = 1; return b; }
 	int p = 0;
